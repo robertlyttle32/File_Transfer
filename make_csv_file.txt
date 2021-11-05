@@ -19,17 +19,3 @@ def format_gps(FILENAME,NO,LATITUDE,LONGITUDE,NAME,ALTITUDE,SPEED,DATE,TIME): # 
             writer.writeheader()
             writer.writerow({'No':NO,'Latitude':LATITUDE,'Longitude':LONGITUDE,'Name':NAME,'Altitude':ALTITUDE,'Speed':SPEED,'Date':DATE,'Time':TIME})
 
-
-
-
-FILENAME = 100
-NO = 800
-LATITUDE = 1000
-LONGITUDE = 400
-NAME = 9000
-ALTITUDE = 393
-SPEED = 600
-DATE = 3000
-TIME = 10000
-
-format_gps(FILENAME,NO,LATITUDE,LONGITUDE,NAME,ALTITUDE,SPEED,DATE,TIME)

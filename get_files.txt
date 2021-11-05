@@ -1,0 +1,10 @@
+#!/bin/bash
+import os
+import time
+
+
+while True:
+    os.system('python3 get_mobile_toll_files.py')
+    time.sleep(60)
+    os.system('python3 get_mobile_toll_files.py')
+    time.sleep(60)

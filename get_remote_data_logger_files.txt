@@ -17,9 +17,9 @@ from pathlib import Path
 from datetime import datetime
 
 
-myHostname = "192.168.1.152"
-myUsername = "rdl-garage"
-myPassword = "Jl122600"
+myHostname = "hostname/IP"
+myUsername = "Username"
+myPassword = "Password"
 
 
 cnopts = pysftp.CnOpts()

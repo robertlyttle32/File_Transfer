@@ -4,7 +4,7 @@ import time
 
 
 while True:
-    os.system('python3 get_mobile_toll_files.py')
+    os.system('python3 get_remote_data_logger_files.py')
     time.sleep(60)
-    os.system('python3 get_mobile_toll_files.py')
+    os.system('python3 get_remote_data_logger_files.py')
     time.sleep(60)

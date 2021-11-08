@@ -21,6 +21,8 @@ myHostname = "hostname/IP"
 myUsername = "Username"
 myPassword = "Password"
 
+cnopts = pysftp.CnOpts()
+cnopts.hostkeys = None
 
 #myHostname = input('Enter IP address for avc: ')
 #print('Enter file name or file extension you would like to download.')

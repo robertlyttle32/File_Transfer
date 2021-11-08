@@ -75,7 +75,7 @@ cnopts.hostkeys = None
 
 def get_gps_log():
     try:
-        with pysftp.Connection(host=myHostname, username=myUsername, password=myPassword) as sftp:
+        with pysftp.Connection(host=myHostname, username=myUsername, password=myPassword, cnopts=cnopts) as sftp:
             print("Connection succesfully established ... ")
             print('Downloading.....')
             for filename in sftp.listdir(remoteFilePath):

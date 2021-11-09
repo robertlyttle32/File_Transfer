@@ -1,6 +1,8 @@
 #Author: Robert Lyttle
 #Date: 10/22/21
 #Description: download files matching file name or extension
+#Remove each dowloaded file from remote server
+
 
 import pysftp
 import os
@@ -17,9 +19,9 @@ from pathlib import Path
 from datetime import datetime
 
 
-myHostname = "hostname/IP"
-myUsername = "Username"
-myPassword = "Password"
+myHostname = "192.168.1.152"
+myUsername = "rdl-garage"
+myPassword = "Jl122600"
 
 
 cnopts = pysftp.CnOpts()
@@ -76,12 +78,13 @@ with pysftp.Connection(host=myHostname, username=myUsername, password=myPassword
     print('Downloading.....')
     for filename in sftp.listdir(remoteFilePath):
         if fnmatch.fnmatch(filename, FILE_NAME):
-            #print(filename)
+            print(filename)
             saved = filename.rstrip()
             saved = saved.split('-')
             #print(saved[3])
             #if count > final_count:
             sftp.get(remoteFilePath + "/" + filename, localFilePath + "/" + filename)
+            sftp.remove(remoteFilePath+'/'+filename)
 
 
     print()

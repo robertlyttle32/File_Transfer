@@ -48,13 +48,14 @@ def make_directory(DIRECTORY_NAME):
         pass
     else:
         os.mkdir(STORAGE_DIRECTORY)
+    return STORAGE_DIRECTORY
 
 
 remoteFilePath = '/home/pi/GPS_log_'+daily_folder()
 #Define the remote path file path
 #remoteFilePath = '/tmp/home/data/'
 #Define the localFilePath path file path
-localFilePath = STORAGE_DIRECTORY # '/home/rdl-nano2/rdl_mobile_tech/'
+localFilePath = make_directory(DIRECTORY_NAME)  # '/home/rdl-nano2/rdl_mobile_tech/'
 
 
 #logger

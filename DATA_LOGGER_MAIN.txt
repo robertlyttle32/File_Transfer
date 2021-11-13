@@ -26,7 +26,7 @@ timestamp = 0
 #gps = UbloxGps(port)
 gps = PA1010D()
 
-def gps_logger_folder():
+def daily_folder():
     get_image_time = datetime.now()
     camera_sub_dir = get_image_time.strftime("%Y_%m_%d")
     return camera_sub_dir
@@ -34,18 +34,24 @@ def gps_logger_folder():
 
 HOME = Path.home()
 FUNCTION = 'GPS_log'
-path = f'{HOME}/{FUNCTION}_{gps_logger_folder()}'
+path = f'{HOME}/{FUNCTION}_{daily_folder()}'
 STORAGE_DIRECTORY = path # Storage for database, images
-if os.path.exists(STORAGE_DIRECTORY):
-    pass
-else:
-    os.mkdir(STORAGE_DIRECTORY)
-print (path)
+
+def make_new_dir(STORAGE_DIRECTORY):
+    if os.path.exists(STORAGE_DIRECTORY):
+        pass
+    else:
+        os.mkdir(STORAGE_DIRECTORY)
+        localFilePath = STORAGE_DIRECTORY
+        LOG_FORMAT = '%(levelname)s %(asctime)s - %(message)s'
+        logging.basicConfig(filename =localFilePath+'/gps.log',level=logging.DEBUG,format=LOG_FORMAT) #Append mode
+    #print (path)
+    return STORAGE_DIRECTORY
 
 #Define the remote path file path
 #remoteFilePath = '/tmp/home/data/'
 #Define the localFilePath path file path
-localFilePath = STORAGE_DIRECTORY # '/home/rdl-nano2/rdl_mobile_tech/'
+localFilePath = make_new_dir(STORAGE_DIRECTORY) # '/home/rdl-nano2/rdl_mobile_tech/'
 
 #logger
 LOG_FORMAT = '%(levelname)s %(asctime)s - %(message)s'
@@ -81,6 +87,7 @@ def run():
                 print(line_count)
                 count = line_count
         else:
+            #os.mkdir(STORAGE_DIRECTORY)
             count = 0
         print (path)
 
@@ -89,6 +96,7 @@ def run():
         print("Listening for GPS Messages")
         while True:
             try:
+                make_new_dir(STORAGE_DIRECTORY)
                 result = gps.update()
                 if result:
                     TIMESTAMP = gps.timestamp

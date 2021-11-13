@@ -73,8 +73,20 @@ logger = logging.getLogger()
 
 def run():
     try:
+        CSV_FILE = f'{STORAGE_DIRECTORY}/GPS_1.csv'
+        if os.path.exists(CSV_FILE):
+            print('CSV file: ',CSV_FILE)
+            with open(CSV_FILE,'r') as read_file:
+                line_count = len(read_file.readlines())
+                print(line_count)
+                count = line_count
+        else:
+            count = 0
+        print (path)
+
+
+
         print("Listening for GPS Messages")
-        count = 0
         while True:
             try:
                 result = gps.update()
@@ -90,7 +102,6 @@ def run():
                     PDOP = gps.pdop
                     VDOP = gps.vdop
                     HDOP = gps.hdop
-                    time.sleep(1.0)
 
                     coordinates = f'lat_{latitude}, lon_{longitude}, speed_{speed_over_ground}'
                     logger.info(coordinates)
@@ -98,13 +109,14 @@ def run():
                     #NAME = count.zfill(3)
                     NAME = count
                     NAME = f'TP{NAME}'
-                    CSV_FILE = f'{STORAGE_DIRECTORY}/GPS_1.csv'
+                    #CSV_FILE = f'{STORAGE_DIRECTORY}/GPS_1.csv'
                     DATE = datetime.now().strftime('%Y/%m/%d')
                     TIME = datetime.now().strftime('%H:%M:%S')
                     form_gps.format_gps(CSV_FILE,count,LATITUDE,LONGITUDE,NAME,ALTITUDE,SPEED,DATE,TIME)
                     count = count + 1
                     print('Longitude: ', LONGITUDE)
                     print('Latitude: ', LATITUDE)
+                    time.sleep(1)
             except (ValueError, IOError) as err:
                 print(err)
 

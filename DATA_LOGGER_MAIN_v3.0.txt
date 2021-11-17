@@ -1,0 +1,177 @@
+#!/bin/bash
+import serial
+import io
+import time
+import os
+import logging
+from pathlib import Path
+from datetime import datetime
+from ublox_gps import UbloxGps
+import make_csv_file as form_gps
+from datetime import datetime
+from pa1010d import PA1010D
+import threading
+
+latitude = 0
+longitude = 0
+altitude = 0
+num_sats = 0
+gps_qual = 0
+speed_over_ground = 0
+pdop = 0
+vdop = 0
+hdop = 0
+timestamp = 0
+#FUNCTION = 'GPS_log'
+LATITUDE = 0
+LONGITUDE = 0
+NAME = 0
+ALTITUDE = 0
+SPEED = 0
+DATE = 0
+TIME = 0
+count = 0
+RESET = False
+RESET_BUTTON = False
+#port = serial.Serial('/dev/serial0', baudrate=38400, timeout=1)
+#gps = UbloxGps(port)
+gps = PA1010D()
+
+def daily_folder():
+    get_image_time = datetime.now()
+    camera_sub_dir = get_image_time.strftime("%Y_%m_%d")
+    return camera_sub_dir
+
+
+def make_new_dir(count):
+    FUNCTION = 'GPS'
+    HOME = Path.home()
+    STORAGE_DIRECTORY = f'{HOME}/{FUNCTION}_{daily_folder()}/'
+
+    if os.path.exists(STORAGE_DIRECTORY):
+        count = count
+    else:
+        os.mkdir(STORAGE_DIRECTORY)
+        #time.sleep(.5)
+        #CSV_FILE = f'{STORAGE_DIRECTORY}/GPS_1.csv'
+        count = 0
+        #form_gps.format_gps(CSV_FILE,count,LATITUDE,LONGITUDE,NAME,ALTITUDE,SPEED,DATE,TIME)
+    #print (path)
+    return STORAGE_DIRECTORY, count
+
+#Define the remote path file path
+#remoteFilePath = '/tmp/home/data/'
+#Define the localFilePath path file path
+#localFilePath = make_new_dir(STORAGE_DIRECTORY) # '/home/rdl-nano2/rdl_mobile_tech/'
+
+def get_logger(object, STORAGE_DIRECTORY):
+    #logger
+    LOG_FORMAT = '%(levelname)s %(asctime)s - %(message)s'
+    logging.basicConfig(filename ='/'+STORAGE_DIRECTORY+'/gps.log',level=logging.DEBUG,format=LOG_FORMAT) #Append mode
+    #logging.basicConfig(filename ='/XAVIER_RELEASE/test.log',level=logging.DEBUG,format=LOG_FORMAT,filemode='w') #Overwrite mode
+    logger = logging.getLogger()
+    log_info = logger.info(object)
+    #logger.debug('test debug log')
+    #logger.warning('test warning log')
+    #logger.error('test error log')
+    #logger.critical('test critical log')
+    return log_info
+
+#port = serial.Serial('/dev/ttyACM0', baudrate=9600, timeout=1)
+#gps = UbloxGps(port)
+
+
+#!/usr/bin/env python3
+#import time
+#from pa1010d import PA1010D
+#gps = PA1010D()
+def run(RESET):
+    try:
+        count = 0
+        STORAGE_DIRECTORY, count = make_new_dir(count)
+        CSV_FILE = f'{STORAGE_DIRECTORY}/GPS_1.csv'
+        if os.path.exists(CSV_FILE):
+            print('CSV file: ',CSV_FILE)
+            with open(CSV_FILE,'r') as read_file:
+                line_count = len(read_file.readlines())
+                print(line_count)
+                count = line_count
+        else:
+            make_new_dir(count)
+            #count = 0
+        #print (path)
+
+        print("Listening for GPS Messages")
+        while True:
+            try:
+                STORAGE_DIRECTORY, count = make_new_dir(count)
+                result = gps.update()
+                if result:
+                    TIMESTAMP = gps.timestamp
+                    LATITUDE = gps.latitude
+                    LONGITUDE = gps.longitude
+                    ALTITUDE = gps.altitude
+                    NUM_SATS = gps.num_sats
+                    GPS_QUAL = gps.gps_qual
+                    SPEED = gps.speed_over_ground
+                    FIX_TYPE = gps.mode_fix_type
+                    PDOP = gps.pdop
+                    VDOP = gps.vdop
+                    HDOP = gps.hdop
+
+                    coordinates = f'lat_{latitude}, lon_{longitude}, speed_{speed_over_ground}'
+                    get_logger(coordinates, STORAGE_DIRECTORY)
+                    #NO,LATITUDE,LONGITUDE,NAME,ALTITUDE,SPEED,DATE,TIME
+                    #NAME = count.zfill(3)
+                    NAME = count
+                    NAME = f'TP{NAME}'
+                    DATE = datetime.now().strftime('%Y/%m/%d')
+                    TIME = datetime.now().strftime('%H:%M:%S')
+                    form_gps.format_gps(CSV_FILE,count,LATITUDE,LONGITUDE,NAME,ALTITUDE,SPEED,DATE,TIME)
+                    count = count + 1
+                    print('Longitude: ', LONGITUDE)
+                    print('Latitude: ', LATITUDE)
+                    time.sleep(1)
+                if RESET == True:
+                    break
+            except (ValueError, IOError) as err:
+                print(err)
+
+    finally:
+        #port.close()
+        print('close port command goes here')
+
+
+if __name__ == '__main__':
+    time.sleep(2)
+    RESET_BUTTON = False
+    RESET = False
+    def cycle_logger(RESET):
+        RESET = True
+        run(RESET)
+        time.sleep(1)
+        os.system(f'rm -r {make_new_dir(count)[0]}')
+        time.sleep(1)
+        RESET = False
+        run(RESET)
+
+    def reset_logger(RESET_BUTTON):
+            run(RESET_BUTTON)
+            time.sleep(1)
+            os.system(f'rm -r {make_new_dir(count)[0]}')
+            time.sleep(1)
+            RESET = False
+            run(RESET)
+
+
+
+
+    if RESET_BUTTON == True:
+        reset_logger(RESET_BUTTON)
+
+    if RESET == True:
+        cycle_logger(RESET)
+
+    else:
+        run(RESET)
+
